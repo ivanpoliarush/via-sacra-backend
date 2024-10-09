@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { CandleType, ProductType } from '../types/order';
+import { CandleType, ProductType, State } from '../types/order';
 
 @Schema({ _id: false })
 class Client {
@@ -38,6 +38,12 @@ export class Order {
 
   @Prop({ type: [Product] })
   products: Product[];
+
+  @Prop({ enum: State, default: State.PENDING })
+  status: State;
+
+  @Prop({ default: Date.now })
+  createdAt: Date;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
