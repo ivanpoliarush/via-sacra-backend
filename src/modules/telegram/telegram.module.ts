@@ -5,6 +5,7 @@ import { TelegrafModule } from 'nestjs-telegraf';
 import { getTelegrafConfig } from 'src/configs/telegraf.config';
 import { TelegramSchema } from './models/telegram-user.model';
 import { TelegramController } from './telegram.controller';
+import { TelegramService } from './telegram.service';
 
 @Module({
   imports: [
@@ -20,6 +21,6 @@ import { TelegramController } from './telegram.controller';
       },
     ]),
   ],
-  providers: [TelegramController],
+  providers: [TelegramController, TelegramService],
 })
 export class TelegramModule {}
