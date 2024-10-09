@@ -3,6 +3,7 @@ import { Command, InjectBot, Start, Update } from 'nestjs-telegraf';
 import { Context, Telegraf } from 'telegraf';
 import {
   AUTHORIZED_MESSAGE,
+  LOGOUT_MESSAGE,
   PASSWORD_NOT_VALID_MESSAGE,
   START_MESSAGE,
   SYSTEM_ERROR_MESSAGE,
@@ -58,6 +59,13 @@ export class TelegramController {
 
   @Command('logout')
   async logout(ctx: Context) {
-    const telegramUserId = ctx.from.id;
+    const user = await this.telegramService.getUserByTelegramId(ctx.from.id);
+    if (!user) {
+      await ctx.reply(USER_NOT_FOUND_MESSAGE);
+      return;
+    }
+
+    await this.telegramService.unauthorizeUser(ctx.from.id);
+    await ctx.reply(LOGOUT_MESSAGE);
   }
 }

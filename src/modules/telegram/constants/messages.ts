@@ -17,3 +17,5 @@ export const PASSWORD_NOT_VALID_MESSAGE = 'Password is not valid';
 
 export const AUTHORIZED_MESSAGE =
   'You are successfully authorized ✅ \n' + 'Welcome! 🎉';
+
+export const LOGOUT_MESSAGE = 'You are successfully logged out 🚪';

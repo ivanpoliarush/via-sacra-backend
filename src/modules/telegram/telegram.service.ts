@@ -40,4 +40,14 @@ export class TelegramService {
     user.authorized = true;
     await user.save();
   }
+
+  async unauthorizeUser(telegramUserId: number) {
+    const user = await this.telegramUserModel.findOne({ telegramUserId });
+    if (!user) {
+      return;
+    }
+
+    user.authorized = false;
+    await user.save();
+  }
 }
