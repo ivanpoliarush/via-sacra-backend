@@ -1,8 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './models/user.model';
-import { USER_ALREADY_EXISTS } from './user.constants';
+import { USER_ALREADY_EXISTS, USER_NOT_FOUND } from './user.constants';
 
 @Injectable()
 export class UserService {
@@ -19,5 +23,12 @@ export class UserService {
     return {
       id: newUser._id.toString(),
     };
+  }
+
+  async deleteUserById(id: string) {
+    const user = await this.userModel.findByIdAndDelete(id);
+    if (!user) {
+      throw new NotFoundException(USER_NOT_FOUND);
+    }
   }
 }
