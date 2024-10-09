@@ -2,6 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { Command, InjectBot, Start, Update } from 'nestjs-telegraf';
 import { Context, Telegraf } from 'telegraf';
 import {
+  ALREADY_AUTHORIZED_MESSAGE,
   AUTHORIZED_MESSAGE,
   LOGOUT_MESSAGE,
   NEW_USER_LOGGED_IN_MESSAGE,
@@ -54,6 +55,11 @@ export class TelegramController {
       const user = await this.telegramService.getUserByTelegramId(ctx.from.id);
       if (!user) {
         await ctx.reply(USER_NOT_FOUND_MESSAGE);
+        return;
+      }
+
+      if (user.authorized) {
+        await ctx.reply(ALREADY_AUTHORIZED_MESSAGE);
         return;
       }
 

@@ -20,6 +20,9 @@ export const AUTHORIZED_MESSAGE =
 
 export const LOGOUT_MESSAGE = 'You are successfully logged out 🚪';
 
+export const ALREADY_AUTHORIZED_MESSAGE =
+  'You are already authorized 🤔 \n' + 'To log out type /logout';
+
 export const NEW_USER_LOGGED_IN_MESSAGE = (name: string, username: string) =>
   'New user logged in! 🔓 \n' +
   `Name: ${name} \n` +
