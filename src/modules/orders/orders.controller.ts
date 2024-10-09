@@ -10,6 +10,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { ApiLimitGurad } from 'src/guards/api-limit.guard';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { IdValidationPipe } from 'src/pipes/id-validation.pipe';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -31,6 +32,7 @@ export class OrdersController {
   }
 
   @Post()
+  @UseGuards(ApiLimitGurad)
   @UsePipes(new ValidationPipe())
   async createOrder(@Body() order: CreateOrderDto) {
     const result = await this.ordersService.createOrder(order);
