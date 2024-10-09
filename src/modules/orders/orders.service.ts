@@ -26,4 +26,11 @@ export class OrdersService {
       throw new NotFoundException(ORDER_NOT_FOUND);
     }
   }
+
+  async deleteOrderById(id: string) {
+    const order = await this.orderModel.findByIdAndDelete(id);
+    if (!order) {
+      throw new NotFoundException(ORDER_NOT_FOUND);
+    }
+  }
 }
