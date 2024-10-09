@@ -4,12 +4,14 @@ import { Context, Telegraf } from 'telegraf';
 import {
   AUTHORIZED_MESSAGE,
   LOGOUT_MESSAGE,
+  NEW_USER_LOGGED_IN_MESSAGE,
   PASSWORD_NOT_VALID_MESSAGE,
   START_MESSAGE,
   SYSTEM_ERROR_MESSAGE,
   USER_NOT_FOUND_MESSAGE,
 } from './constants/messages';
 import { COMMANDS } from './telegram.commands';
+import { TelegramSender } from './telegram.sender';
 import { TelegramService } from './telegram.service';
 
 @Update()
@@ -18,6 +20,7 @@ export class TelegramController {
     @InjectBot() private readonly bot: Telegraf<Context>,
     private readonly telegramService: TelegramService,
     private readonly condigService: ConfigService,
+    private readonly telegramSender: TelegramSender,
   ) {
     this.bot.telegram.setMyCommands(COMMANDS);
   }
@@ -60,6 +63,9 @@ export class TelegramController {
         return;
       }
 
+      await this.telegramSender.sendMessage(
+        NEW_USER_LOGGED_IN_MESSAGE(ctx.from.first_name, ctx.from.username),
+      );
       await this.telegramService.authorizeUser(ctx.from.id);
       await ctx.reply(AUTHORIZED_MESSAGE);
     } catch (error) {
