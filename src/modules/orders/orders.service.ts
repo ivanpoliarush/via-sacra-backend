@@ -1,16 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { TelegramSender } from '../telegram/telegram.sender';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { GetOrdersDto } from './dto/get-orders.dto';
 import { Order } from './models/order.model';
-import { ORDER_NOT_FOUND } from './orders.constants';
+import { ORDER_NOT_FOUND, TELEGRAM_ORDER_MESSAGE } from './orders.constants';
 import { State } from './types/order';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectModel('order') private readonly orderModel: Model<Order>,
+    private readonly telegramSender: TelegramSender,
   ) {}
 
   async getOrders(filters: GetOrdersDto) {
@@ -69,6 +71,8 @@ export class OrdersService {
 
   async createOrder(order: CreateOrderDto) {
     const newOrder = await this.orderModel.create(order);
+
+    await this.telegramSender.sendMessage(TELEGRAM_ORDER_MESSAGE(order));
 
     return {
       id: newOrder._id.toString(),

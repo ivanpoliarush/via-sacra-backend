@@ -9,7 +9,7 @@ export class TelegramUser {
   telegramUserId: number;
 
   @Prop()
-  telegramChartId: number;
+  telegramChatId: number;
 
   @Prop()
   authorized: boolean;

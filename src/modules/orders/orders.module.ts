@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { TelegramModule } from '../telegram/telegram.module';
 import { OrderSchema } from './models/order.model';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
@@ -12,6 +13,8 @@ import { OrdersService } from './orders.service';
         schema: OrderSchema,
       },
     ]),
+
+    TelegramModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],
