@@ -1,6 +1,13 @@
+import { ConfigService } from '@nestjs/config';
 import { Command, InjectBot, Start, Update } from 'nestjs-telegraf';
 import { Context, Telegraf } from 'telegraf';
-import { START_MESSAGE } from './constants/messages';
+import {
+  AUTHORIZED_MESSAGE,
+  PASSWORD_NOT_VALID_MESSAGE,
+  START_MESSAGE,
+  SYSTEM_ERROR_MESSAGE,
+  USER_NOT_FOUND_MESSAGE,
+} from './constants/messages';
 import { COMMANDS } from './telegram.commands';
 import { TelegramService } from './telegram.service';
 
@@ -9,6 +16,7 @@ export class TelegramController {
   constructor(
     @InjectBot() private readonly bot: Telegraf<Context>,
     private readonly telegramService: TelegramService,
+    private readonly condigService: ConfigService,
   ) {
     this.bot.telegram.setMyCommands(COMMANDS);
   }
@@ -26,7 +34,26 @@ export class TelegramController {
 
   @Command('login')
   async login(ctx: Context) {
-    const telegramUserId = ctx.from.id;
+    const telegramPassword = await this.condigService.get('TELEGRAM_PASSWORD');
+    if (!telegramPassword) {
+      await ctx.reply(SYSTEM_ERROR_MESSAGE);
+      return;
+    }
+
+    const user = await this.telegramService.getUserByTelegramId(ctx.from.id);
+    if (!user) {
+      await ctx.reply(USER_NOT_FOUND_MESSAGE);
+      return;
+    }
+
+    const password = (ctx.message['text'] || '').split(' ')[1];
+    if (password !== telegramPassword) {
+      await ctx.reply(PASSWORD_NOT_VALID_MESSAGE);
+      return;
+    }
+
+    await this.telegramService.authorizeUser(ctx.from.id);
+    await ctx.reply(AUTHORIZED_MESSAGE);
   }
 
   @Command('logout')

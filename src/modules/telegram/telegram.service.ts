@@ -25,4 +25,19 @@ export class TelegramService {
       authorized: false,
     });
   }
+
+  async getUserByTelegramId(telegramUserId: number) {
+    const user = await this.telegramUserModel.findOne({ telegramUserId });
+    return user;
+  }
+
+  async authorizeUser(telegramUserId: number) {
+    const user = await this.telegramUserModel.findOne({ telegramUserId });
+    if (!user) {
+      return;
+    }
+
+    user.authorized = true;
+    await user.save();
+  }
 }
