@@ -24,48 +24,64 @@ export class TelegramController {
 
   @Start()
   async start(ctx: Context) {
-    await this.telegramService.createUser(
-      ctx.from.first_name,
-      ctx.chat.id,
-      ctx.from.id,
-    );
+    try {
+      await this.telegramService.createUser(
+        ctx.from.first_name,
+        ctx.chat.id,
+        ctx.from.id,
+      );
 
-    await ctx.reply(START_MESSAGE);
+      await ctx.reply(START_MESSAGE);
+    } catch (error) {
+      console.log('Start telegram error:', error);
+      await ctx.reply(SYSTEM_ERROR_MESSAGE);
+    }
   }
 
   @Command('login')
   async login(ctx: Context) {
-    const telegramPassword = await this.condigService.get('TELEGRAM_PASSWORD');
-    if (!telegramPassword) {
+    try {
+      const telegramPassword =
+        await this.condigService.get('TELEGRAM_PASSWORD');
+      if (!telegramPassword) {
+        await ctx.reply(SYSTEM_ERROR_MESSAGE);
+        return;
+      }
+
+      const user = await this.telegramService.getUserByTelegramId(ctx.from.id);
+      if (!user) {
+        await ctx.reply(USER_NOT_FOUND_MESSAGE);
+        return;
+      }
+
+      const password = (ctx.message['text'] || '').split(' ')[1];
+      if (password !== telegramPassword) {
+        await ctx.reply(PASSWORD_NOT_VALID_MESSAGE);
+        return;
+      }
+
+      await this.telegramService.authorizeUser(ctx.from.id);
+      await ctx.reply(AUTHORIZED_MESSAGE);
+    } catch (error) {
+      console.log('Login telegram error:', error);
       await ctx.reply(SYSTEM_ERROR_MESSAGE);
-      return;
     }
-
-    const user = await this.telegramService.getUserByTelegramId(ctx.from.id);
-    if (!user) {
-      await ctx.reply(USER_NOT_FOUND_MESSAGE);
-      return;
-    }
-
-    const password = (ctx.message['text'] || '').split(' ')[1];
-    if (password !== telegramPassword) {
-      await ctx.reply(PASSWORD_NOT_VALID_MESSAGE);
-      return;
-    }
-
-    await this.telegramService.authorizeUser(ctx.from.id);
-    await ctx.reply(AUTHORIZED_MESSAGE);
   }
 
   @Command('logout')
   async logout(ctx: Context) {
-    const user = await this.telegramService.getUserByTelegramId(ctx.from.id);
-    if (!user) {
-      await ctx.reply(USER_NOT_FOUND_MESSAGE);
-      return;
-    }
+    try {
+      const user = await this.telegramService.getUserByTelegramId(ctx.from.id);
+      if (!user) {
+        await ctx.reply(USER_NOT_FOUND_MESSAGE);
+        return;
+      }
 
-    await this.telegramService.unauthorizeUser(ctx.from.id);
-    await ctx.reply(LOGOUT_MESSAGE);
+      await this.telegramService.unauthorizeUser(ctx.from.id);
+      await ctx.reply(LOGOUT_MESSAGE);
+    } catch (error) {
+      console.log('Logout telegram error:', error);
+      await ctx.reply(SYSTEM_ERROR_MESSAGE);
+    }
   }
 }
