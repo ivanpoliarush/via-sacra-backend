@@ -46,6 +46,7 @@ export class OrdersService {
       this.orderModel
         .find(seacrhParams)
         .limit(filters.limit)
+        .sort({ createdAt: -1 })
         .skip(Math.max(filters.page - 1, 0) * filters.limit),
       this.orderModel.countDocuments(seacrhParams),
     ]);
