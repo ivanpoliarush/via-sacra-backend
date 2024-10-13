@@ -14,10 +14,10 @@ export class TelegramService {
   async getUsers(filters: GetUsersDto) {
     const [users, total] = await Promise.all([
       this.telegramUserModel
-        .find({})
+        .find({ authorized: true })
         .limit(filters.limit)
         .skip(Math.max(filters.page - 1, 0) * filters.limit),
-      this.telegramUserModel.countDocuments(),
+      this.telegramUserModel.countDocuments({ authorized: true }),
     ]);
 
     const result = {
@@ -57,6 +57,11 @@ export class TelegramService {
 
   async getUserByTelegramId(telegramUserId: number) {
     const user = await this.telegramUserModel.findOne({ telegramUserId });
+    return user;
+  }
+
+  async getUserById(id: string) {
+    const user = await this.telegramUserModel.findById(id);
     return user;
   }
 

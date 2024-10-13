@@ -14,7 +14,17 @@ export class TelegramBotSender {
     private readonly telegramUserModel: Model<TelegramUser>,
   ) {}
 
-  async sendMessage(message: string) {
+  async sendMessage(message: string, chatId?: number) {
+    if (chatId) {
+      try {
+        await this.bot.telegram.sendMessage(chatId, message);
+      } catch (error) {
+        console.log('Telegram send message error:', error);
+      }
+
+      return;
+    }
+
     const queue = new Queue();
 
     const users = await this.telegramUserModel.find({ authorized: true });
