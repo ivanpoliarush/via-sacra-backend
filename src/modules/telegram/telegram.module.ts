@@ -4,8 +4,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { getTelegrafConfig } from 'src/configs/telegraf.config';
 import { TelegramSchema } from './models/telegram-user.model';
+import { TelegramBotController } from './telegram-bot.controller';
+import { TelegramBotSender } from './telegram-bot.sender';
 import { TelegramController } from './telegram.controller';
-import { TelegramSender } from './telegram.sender';
 import { TelegramService } from './telegram.service';
 
 @Module({
@@ -22,7 +23,8 @@ import { TelegramService } from './telegram.service';
       },
     ]),
   ],
-  providers: [TelegramController, TelegramService, TelegramSender],
-  exports: [TelegramSender],
+  controllers: [TelegramController],
+  providers: [TelegramBotController, TelegramService, TelegramBotSender],
+  exports: [TelegramBotSender],
 })
 export class TelegramModule {}

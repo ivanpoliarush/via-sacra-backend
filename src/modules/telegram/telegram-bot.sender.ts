@@ -7,7 +7,7 @@ import { Context, Telegraf } from 'telegraf';
 import { TelegramUser } from './models/telegram-user.model';
 
 @Injectable()
-export class TelegramSender {
+export class TelegramBotSender {
   constructor(
     @InjectBot() private readonly bot: Telegraf<Context>,
     @InjectModel('telegram_user')
